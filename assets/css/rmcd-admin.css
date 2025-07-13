@@ -1,0 +1,30 @@
+ /* RMCD admin css */
+ .rmcd-page .fields-table {
+     width: 100%;
+     max-width: 800px;
+ }
+
+ .rmcd-page .fields-table th {
+     width: 200px;
+     text-align: left;
+ }
+
+ .rmcd-page .host-url-input {
+     width: 100%;
+     max-width: 100%;
+ }
+
+ .rmcd-page .download-media-btn-wrapper {
+     display: flex;
+     gap: 12px;
+     flex-wrap: wrap;
+ }
+
+ .rmcd-page .loading_list_wrapper {
+     max-height: 900px;
+     max-width: 75%;
+     overflow-y: auto;
+     border: 1px solid;
+     border-radius: 4px;
+     padding: 12px;
+ }
