@@ -150,7 +150,7 @@ class RMCD_Admin_Settings {
      * for downloading media files in bulk from the specified origin URL.
      */
     public function rmcd_bulk_restore_process() {
-        $page_number = isset($_POST['page_number']) ? $_POST['page_number'] : 0;
+        $page_number = 0;
         $host_url = isset($_POST['host_url']) ? sanitize_text_field(wp_unslash($_POST['host_url'])) : '';
         $skip_unused_media = 'checked';
         $retry_download = 0;
@@ -198,6 +198,8 @@ class RMCD_Admin_Settings {
         } else {
             echo '<p>No media downloaded yet.</p>';
         }
+        $page_number = isset($_POST['page_number']) ? $_POST['page_number'] :  $page_number;
+
         if (!$download_in_progress) {
 
             echo '<form method="post">';
