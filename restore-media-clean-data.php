@@ -10,7 +10,6 @@
  */
 
 
-
 // Exit if accessed directly.
 if (!defined('ABSPATH')) {
     exit;
@@ -31,12 +30,13 @@ class RMCD_CleanRepairData {
     //
     public function __construct() {
         add_action('admin_enqueue_scripts', [$this, 'rmcd_admin_enqueue_scripts']);
-        $this->check_generate_log_files();
         // 
         require_once RMCD_PLUGIN_DIR . 'class-admin-settings.php';
         require_once RMCD_PLUGIN_DIR . 'class-restore-media.php';
         require_once RMCD_PLUGIN_DIR . 'class-clean-data.php';
-        require_once RMCD_PLUGIN_DIR . 'class-custom-media-path.php';
+        // require_once RMCD_PLUGIN_DIR . 'class-custom-media-path.php';
+        self::set_log_files();
+
         //
         $this->restore_media = new RMCD_RestoreMedia();
         $this->clean_data = new RMCD_CleanData();
@@ -76,10 +76,7 @@ class RMCD_CleanRepairData {
         ]);
     }
 
-    /**
-     * 
-     */
-    public function check_generate_log_files() {
+    public static function set_log_files($log_clear = false) {
         $log_files = [
             RMCD_RestoreMedia::$download_log_file,
             RMCD_RestoreMedia::$download_error_log_file,
@@ -97,6 +94,10 @@ class RMCD_CleanRepairData {
             // Create the log file if it doesn't exist
             if (!file_exists($file)) {
                 file_put_contents($file, ""); // create empty file
+            }
+            // clear log file content
+            if ($log_clear) {
+                file_put_contents($file, "");
             }
         }
     }

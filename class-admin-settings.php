@@ -88,6 +88,11 @@ class RMCD_Admin_Settings {
             return;
         }
 
+        // clear log if submited as clear log
+        if (isset($_POST['rmcd_clear_log_process']) && check_admin_referer('clear_log_data_files')) {
+            RMCD_CleanRepairData::set_log_files(true);
+        }
+        // output
         echo '<div class="rmcd-page wrap">';
         echo '<h1>Restore/Check Media and Clean Data</h1>';
 
@@ -96,7 +101,7 @@ class RMCD_Admin_Settings {
         $this->rmcd_check_media_process();
         $this->rmcd_clean_post_type();
         $this->rmcd_delete_old_posts_before_date();
-
+        $this->rmcd_clear_log_data();
 
         echo '</div>';
     }
@@ -172,8 +177,13 @@ class RMCD_Admin_Settings {
         $last_download_log_info = $this->restore_media->get_last_download_log_info($this->restore_media::$download_log_file);
         $download_in_progress = false;
         if ($last_download_log_info && is_array($last_download_log_info)) {
-            if ($last_download_log_info['page_number'] * 50 == $last_download_log_info['download_number']) {
-                $page_number = $next_start_page_number = $last_download_log_info['page_number'] + 1;
+            $file_modifiedtime_exceed = filemtime($this->restore_media::$download_log_file) < (time() - (0.5 * 60));
+            if ($file_modifiedtime_exceed) {
+                if ($last_download_log_info['page_number'] == $last_download_log_info['download_number']) {
+                    $page_number = $next_start_page_number = $last_download_log_info['download_number'] + 1;
+                } else {
+                    $page_number = $next_start_page_number = $last_download_log_info['download_number'];
+                }
                 $remote_url = $last_download_log_info['remote_url'];
                 $host_url = parse_url($remote_url, PHP_URL_SCHEME) . '://' . parse_url($remote_url, PHP_URL_HOST) . '/';
                 echo '
@@ -185,7 +195,7 @@ class RMCD_Admin_Settings {
                 <li> Page Number: <strong>' . $last_download_log_info['page_number'] . '</strong> </li>
                 <li> Message: <strong>' . $last_download_log_info['message'] . '</strong></li>
                 </ul>
-                <p> Now start downloading media from page number <strong>' . $next_start_page_number . '</strong> </p>
+                <p> Now start downloading media from Index <strong>' . $next_start_page_number . '</strong> </p>
                 </div>
                 ';
             } else {
@@ -216,7 +226,7 @@ class RMCD_Admin_Settings {
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="page_number">Start Page Number</label>
+                        <label for="page_number">Start Download Index Page Number</label>
                     </th>
                     <td>
                         <input type="number" name="page_number" id="page_number" value="' . $page_number . '" min="1" class="page-number-input" placeholder="">
@@ -380,6 +390,22 @@ class RMCD_Admin_Settings {
         }
     }
 
+
+    public function rmcd_clear_log_data() {
+
+        echo '<div class="clear-log-data">';
+        echo '<h2>Clear Log Data</h2>';
+        echo '<p>Clear restore and clean data log files.</p>';
+        echo '<form method="post">';
+        wp_nonce_field('clear_log_data_files');
+        submit_button('Clear Log Data', 'primary', 'rmcd_clear_log_process');
+        echo '</form>';
+
+        if (isset($_POST['rmcd_clear_log_process']) && check_admin_referer('clear_log_data_files')) {
+            echo "---- log cleared ---- ";
+        }
+        echo '</div>'; // Close clear-log-data div
+    }
 
 
     /**

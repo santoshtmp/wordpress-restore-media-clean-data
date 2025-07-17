@@ -55,7 +55,7 @@ class RMCD_RestoreMedia {
         $page_number = isset($_POST['page_number']) ? $_POST['page_number'] : 1;
         //
         if ($retry_download) {
-            $per_page = 50;
+            $per_page = 1;
             $download_failed_media = [];
             $remaining_lines = [];
 
@@ -100,7 +100,7 @@ class RMCD_RestoreMedia {
             }
             // Fetch all media attachments
             $total_downloaded = 0;
-            $posts_per_page = 50;
+            $posts_per_page = 1;
 
             if ($page_number > 1) {
                 $total_downloaded = $posts_per_page * ($page_number - 1);
